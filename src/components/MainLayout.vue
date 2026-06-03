@@ -2,9 +2,9 @@
   <div class="main-layout">
     <Header />
     
-    <main class="main-content">
+    <ContentLayout>
       <slot></slot>
-    </main>
+    </ContentLayout>
     
     <Footer />
   </div>
@@ -13,6 +13,7 @@
 <script setup>
 import Header from './Header.vue'
 import Footer from './Footer.vue'
+import ContentLayout from './ContentLayout.vue'
 </script>
 
 <style scoped>
@@ -20,10 +21,5 @@ import Footer from './Footer.vue'
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-}
-
-.main-content {
-  flex: 1;
-  background: #f5f5f5;
 }
 </style>

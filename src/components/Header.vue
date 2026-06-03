@@ -5,11 +5,9 @@
         <h1>PSS GUI Utility</h1>
       </div>
       
-      <nav class="nav-menu">
-        <router-link to="/" class="nav-link">首頁</router-link>
-        <router-link to="/about" class="nav-link">關於</router-link>
-        <router-link to="/settings" class="nav-link">設定</router-link>
-      </nav>
+      <div class="header-info">
+        <span class="app-version">v1.0.0</span>
+      </div>
     </div>
   </header>
 </template>
@@ -23,11 +21,13 @@
   color: white;
   padding: 1rem 2rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: 60px;
+  display: flex;
+  align-items: center;
 }
 
 .header-content {
-  max-width: 1200px;
-  margin: 0 auto;
+  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -39,26 +39,17 @@
   font-weight: 600;
 }
 
-.nav-menu {
+.header-info {
   display: flex;
-  gap: 2rem;
+  align-items: center;
+  gap: 1rem;
 }
 
-.nav-link {
-  color: white;
-  text-decoration: none;
-  font-size: 1rem;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  transition: background 0.3s;
-}
-
-.nav-link:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.nav-link.router-link-active {
+.app-version {
   background: rgba(255, 255, 255, 0.2);
-  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
 }
 </style>

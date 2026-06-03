@@ -1,0 +1,59 @@
+{
+  "name": "pss_gui_utility",
+  "version": "1.0.0",
+  "description": "Vue 3 + Electron + Go Desktop Application",
+  "main": "electron/main.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:vite\" \"npm run dev:electron\"",
+    "dev:vite": "vite",
+    "dev:electron": "cross-env NODE_ENV=development electron .",
+    "build": "vite build",
+    "build:go": "cd backend && go build -o server main.go",
+    "start": "npm run build:go && npm run build && cross-env NODE_ENV=production electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "keywords": ["electron", "vue3", "go", "desktop"],
+  "author": {
+    "name": "Franco",
+    "email": "franco@example.com"
+  },
+  "homepage": "https://github.com/franco/pss_gui_utility",
+  "license": "ISC",
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.5",
+    "concurrently": "^9.2.1",
+    "cross-env": "^10.1.0",
+    "electron": "^34.0.0",
+    "electron-builder": "^26.8.1",
+    "vite": "^8.0.0",
+    "vue": "^3.5.30"
+  },
+  "build": {
+    "appId": "com.pss.gui.utility",
+    "productName": "PSS GUI Utility",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "backend/server",
+      "backend/server.exe",
+      "build/pss-gui-utility.desktop"
+    ],
+    "asarUnpack": [
+      "backend/**/*"
+    ],
+    "linux": {
+      "target": ["AppImage", "deb"],
+      "category": "Utility"
+    },
+    "win": {
+      "target": ["nsis"]
+    },
+    "mac": {
+      "target": ["dmg"]
+    }
+  }
+}

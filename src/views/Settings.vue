@@ -1,144 +1,162 @@
 <template>
   <div class="settings">
-    <h1>⚙️ 系統設定</h1>
+    <h1><Icon type="ios-settings" size="28" /> 系統設定</h1>
     
-    <Card title="資料庫連線設定" class="database-card">
-      <div class="setting-item">
-        <label>資料庫種類 <span class="required">*</span></label>
-        <select v-model="dbConfig.type" class="db-select">
-          <option value="mssql">MS SQL Server</option>
-          <option value="mysql">MySQL</option>
-        </select>
-      </div>
+    <!-- 資料庫連線設定 -->
+    <Card dis-hover :bordered="false" class="database-card">
+      <template #title>
+        <Icon type="ios-link" />
+        資料庫連線設定
+      </template>
       
-      <div class="setting-item">
-        <label>主機位址 (Host) <span class="required">*</span></label>
-        <input 
-          v-model="dbConfig.host" 
-          type="text"
-          placeholder="localhost"
-          class="db-input"
-        />
-      </div>
-      
-      <div class="setting-item">
-        <label>端口 (Port)</label>
-        <input 
-          v-model.number="dbConfig.port" 
-          type="number"
-          :placeholder="dbConfig.type === 'mssql' ? '1433' : '3306'"
-          class="db-input"
-        />
-      </div>
-      
-      <div class="setting-item">
-        <label>使用者名稱 <span class="required">*</span></label>
-        <input 
-          v-model="dbConfig.username" 
-          type="text"
-          placeholder="admin"
-          class="db-input"
-        />
-      </div>
-      
-      <div class="setting-item">
-        <label>密碼</label>
-        <div class="password-input">
-          <input 
-            v-model="dbConfig.password" 
-            :type="showPassword ? 'text' : 'password'"
-            placeholder="••••••••"
-            class="db-input"
+      <Form :model="dbConfig" :label-width="120">
+        <FormItem label="資料庫種類">
+          <Select v-model="dbConfig.type" placeholder="請選擇資料庫類型">
+            <Option value="mssql">MS SQL Server</Option>
+            <Option value="mysql">MySQL</Option>
+          </Select>
+        </FormItem>
+        
+        <FormItem>
+          <template #label>
+            主機位址 <span style="color: red;">*</span>
+          </template>
+          <Input 
+            v-model="dbConfig.host" 
+            placeholder="localhost"
+            clearable
           />
-          <button 
-            @click="showPassword = !showPassword" 
-            class="toggle-password"
-            type="button"
+        </FormItem>
+        
+        <FormItem label="端口號">
+          <InputNumber 
+            v-model="dbConfig.port" 
+            :min="1" 
+            :max="65535"
+            :placeholder="dbConfig.type === 'mssql' ? '1433' : '3306'"
+            style="width: 200px"
+          />
+        </FormItem>
+        
+        <FormItem>
+          <template #label>
+            使用者名稱 <span style="color: red;">*</span>
+          </template>
+          <Input 
+            v-model="dbConfig.username" 
+            placeholder="admin"
+            clearable
+          />
+        </FormItem>
+        
+        <FormItem label="密碼">
+          <Input 
+            v-model="dbConfig.password" 
+            type="password"
+            password
+            placeholder="請輸入密碼"
+          />
+        </FormItem>
+        
+        <FormItem label="資料庫名稱">
+          <Input 
+            v-model="dbConfig.database" 
+            :placeholder="dbConfig.type === 'mssql' ? 'master' : ''"
+            clearable
+          />
+        </FormItem>
+        
+        <FormItem>
+          <Button 
+            type="primary" 
+            icon="md-link"
+            :loading="configStore.loading"
+            @click="testConnection"
           >
-            {{ showPassword ? '👁️' : '👁️‍🗨️' }}
-          </button>
-        </div>
-      </div>
-      
-      <div class="setting-item">
-        <label>資料庫名稱</label>
-        <input 
-          v-model="dbConfig.database" 
-          type="text"
-          :placeholder="dbConfig.type === 'mssql' ? 'master' : ''"
-          class="db-input"
-        />
-      </div>
-      
-      <div class="db-actions">
-        <button @click="testConnection" class="test-btn" :disabled="configStore.loading">
-          {{ configStore.loading ? '測試中...' : '🔌 測試連線' }}
-        </button>
-        <button @click="saveConfiguration" class="save-btn primary" :disabled="configStore.loading">
-          {{ configStore.loading ? '儲存中...' : '💾 儲存設定' }}
-        </button>
-      </div>
-      
-      <div v-if="message" :class="['message', messageType]">
-        {{ message }}
-      </div>
+            測試連線
+          </Button>
+          <Button 
+            type="success" 
+            icon="md-checkmark"
+            :loading="configStore.loading"
+            @click="saveConfiguration"
+            style="margin-left: 8px"
+          >
+            儲存設定
+          </Button>
+        </FormItem>
+      </Form>
     </Card>
     
-    <Card title="語言設定">
-      <div class="setting-item">
-        <label>語言設定</label>
-        <select 
-          v-model="appStore.language" 
-          @change="handleLanguageChange"
-          class="language-select"
-        >
-          <option value="zh-TW">繁體中文</option>
-          <option value="zh-CN">简体中文</option>
-          <option value="en">English</option>
-          <option value="ja">日本語</option>
-        </select>
-      </div>
+    <!-- 語言設定 -->
+    <Card dis-hover :bordered="false" style="margin-top: 16px">
+      <template #title>
+        <Icon type="ios-globe" />
+        語言設定
+      </template>
+      
+      <Form :label-width="120">
+        <FormItem label="介面語言">
+          <Select 
+            v-model="appStore.language" 
+            @on-change="handleLanguageChange"
+            style="width: 200px"
+          >
+            <Option value="zh-TW">繁體中文</Option>
+            <Option value="zh-CN">简体中文</Option>
+            <Option value="en">English</Option>
+            <Option value="ja">日本語</Option>
+          </Select>
+        </FormItem>
+      </Form>
     </Card>
     
-    <Card title="系統資訊" class="system-info">
+    <!-- 系統資訊 -->
+    <Card dis-hover :bordered="false" style="margin-top: 16px">
+      <template #title>
+        <Icon type="ios-information-circle" />
+        系統資訊
+      </template>
+      
       <div class="info-grid">
-        <div class="info-row">
+        <div class="info-item">
           <span class="info-label">平台：</span>
-          <span class="info-value">{{ appStore.platformName }}</span>
+          <Tag color="primary">{{ appStore.platformName }}</Tag>
         </div>
-        <div class="info-row">
+        <div class="info-item">
           <span class="info-label">Node.js：</span>
-          <span class="info-value">{{ appStore.systemInfo.node }}</span>
+          <Tag color="success">{{ appStore.systemInfo.node }}</Tag>
         </div>
-        <div class="info-row">
+        <div class="info-item">
           <span class="info-label">Chrome：</span>
-          <span class="info-value">{{ appStore.systemInfo.chrome }}</span>
+          <span>{{ appStore.systemInfo.chrome }}</span>
         </div>
-        <div class="info-row">
+        <div class="info-item">
           <span class="info-label">Electron：</span>
-          <span class="info-value">{{ appStore.systemInfo.electron }}</span>
+          <Tag color="warning">{{ appStore.systemInfo.electron }}</Tag>
         </div>
       </div>
     </Card>
     
     <div class="actions">
-      <button @click="$router.push('/system/info')" class="back-btn">返回系統資訊</button>
+      <Button 
+        icon="ios-arrow-back"
+        @click="$router.push('/system/info')"
+      >
+        返回系統資訊
+      </Button>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, toRaw } from 'vue'
+import { Message } from 'view-ui-plus'
 import { useAppStore } from '../stores/app'
 import { useConfigStore } from '../stores/config'
-import Card from '../components/Card.vue'
 
 const appStore = useAppStore()
 const configStore = useConfigStore()
-
-const showPassword = ref(false)
-const message = ref('')
-const messageType = ref('info')
 
 const dbConfig = ref({
   type: 'mssql',
@@ -160,28 +178,32 @@ onMounted(async () => {
 // 測試資料庫連線
 async function testConnection() {
   if (!dbConfig.value.host || !dbConfig.value.username) {
-    showMessage('error', '❌ 請填寫必填欄位（主機位址、使用者名稱）')
+    Message.warning('請填寫必填欄位（主機位址、使用者名稱）')
     return
   }
   
-  // 使用 toRaw 將 reactive 物件轉換為純物件
   const result = await configStore.testConnection(toRaw(dbConfig.value))
   
   if (result.success) {
-    showMessage('success', result.message + (result.details ? '\n' + result.details : ''))
+    Message.success({
+      content: result.message + (result.details ? '\n' + result.details : ''),
+      duration: 3
+    })
   } else {
-    showMessage('error', result.message + (result.error ? '\n' + result.error : ''))
+    Message.error({
+      content: result.message + (result.error ? '\n' + result.error : ''),
+      duration: 5
+    })
   }
 }
 
 // 儲存設定
 async function saveConfiguration() {
   if (!dbConfig.value.host || !dbConfig.value.username) {
-    showMessage('error', '❌ 請填寫必填欄位（主機位址、使用者名稱）')
+    Message.warning('請填寫必填欄位（主機位址、使用者名稱）')
     return
   }
   
-  // 使用 toRaw 將 reactive 物件轉換為純物件，避免 IPC 序列化錯誤
   const newConfig = {
     ...toRaw(configStore.config),
     database: toRaw(dbConfig.value)
@@ -190,29 +212,22 @@ async function saveConfiguration() {
   const result = await configStore.saveConfig(newConfig)
   
   if (result.success) {
-    showMessage('success', '✅ 設定已成功儲存')
+    Message.success('設定已成功儲存')
   } else {
-    showMessage('error', '❌ 儲存失敗：' + result.message)
+    Message.error('儲存失敗：' + result.message)
   }
 }
 
-function showMessage(type, msg) {
-  messageType.value = type
-  message.value = msg
-  setTimeout(() => {
-    message.value = ''
-  }, 5000)
-}
-
-function handleLanguageChange(event) {
-  console.log('語言已變更為：', event.target.value)
+function handleLanguageChange(value) {
+  console.log('語言已變更為：', value)
+  Message.info('語言設定已更新為：' + value)
 }
 </script>
 
 <style scoped>
 .settings {
   padding: 2rem;
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
 }
 
@@ -220,56 +235,27 @@ h1 {
   font-size: 2rem;
   color: #2c3e50;
   margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.setting-item {
-  margin-bottom: 1.5rem;
-  padding-bottom: 1.5rem;
-  border-bottom: 1px solid #eee;
-}
-
-.setting-item:last-child {
-  border-bottom: none;
-  padding-bottom: 0;
-  margin-bottom: 0;
-}
-
-.setting-item label {
-  display: block;
-  font-weight: 600;
-  color: #2c3e50;
-  margin-bottom: 0.75rem;
-}
-
-.language-select {
-  padding: 0.5rem 1rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 1rem;
-  cursor: pointer;
-  background: white;
-  min-width: 200px;
-}
-
-.language-select:focus {
-  outline: none;
-  border-color: #42b983;
-}
-
-.system-info {
+.actions {
   margin-top: 2rem;
+  text-align: center;
 }
 
 .info-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
 }
 
-.info-row {
+.info-item {
   display: flex;
-  justify-content: space-between;
-  padding: 0.5rem;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
   background: #f8f9fa;
   border-radius: 4px;
 }
@@ -279,27 +265,10 @@ h1 {
   color: #666;
 }
 
-.info-value {
-  color: #2c3e50;
-}
-
-.actions {
-  margin-top: 2rem;
-  text-align: center;
-}
-
-.back-btn {
-  padding: 0.75rem 2rem;
-  background: #42b983;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background 0.3s;
-}
-
-.back-btn:hover {
-  background: #369970;
+.form-hint {
+  color: #808695;
+  font-size: 12px;
+  line-height: 1.5;
+  margin-top: 4px;
 }
 </style>

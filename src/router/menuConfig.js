@@ -1,25 +1,6 @@
 // 菜单配置
 export const menuConfig = [
   {
-    id: 'dashboard',
-    title: '儀表板',
-    icon: '📊',
-    children: [
-      {
-        id: 'dashboard-overview',
-        title: '總覽',
-        path: '/',
-        icon: '🏠'
-      },
-      {
-        id: 'dashboard-stats',
-        title: '統計圖表',
-        path: '/dashboard/stats',
-        icon: '📈'
-      }
-    ]
-  },
-  {
     id: 'system',
     title: '系統管理',
     icon: '🔧',
@@ -48,12 +29,6 @@ export const menuConfig = [
         title: '應用資訊',
         path: '/about',
         icon: 'ℹ️'
-      },
-      {
-        id: 'about-version',
-        title: '版本歷史',
-        path: '/about/version',
-        icon: '📝'
       }
     ]
   }

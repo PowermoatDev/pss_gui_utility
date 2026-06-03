@@ -1,23 +1,8 @@
 <template>
   <div class="settings">
-    <h1>應用設定</h1>
+    <h1>⚙️ 系統設定</h1>
     
-    <Card title="外觀設定">
-      <div class="setting-item">
-        <label>主題模式</label>
-        <div class="theme-toggle">
-          <button 
-            @click="appStore.toggleTheme()" 
-            class="theme-btn"
-          >
-            {{ appStore.isDarkTheme ? '🌙 深色模式' : '☀️ 淺色模式' }}
-          </button>
-          <span class="theme-status">
-            目前：{{ appStore.theme }}
-          </span>
-        </div>
-      </div>
-      
+    <Card title="語言設定">
       <div class="setting-item">
         <label>語言設定</label>
         <select 
@@ -55,7 +40,7 @@
     </Card>
     
     <div class="actions">
-      <button @click="$router.push('/')" class="back-btn">返回首頁</button>
+      <button @click="$router.push('/system/info')" class="back-btn">返回系統資訊</button>
     </div>
   </div>
 </template>
@@ -101,32 +86,6 @@ h1 {
   font-weight: 600;
   color: #2c3e50;
   margin-bottom: 0.75rem;
-}
-
-.theme-toggle {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.theme-btn {
-  padding: 0.5rem 1rem;
-  background: #42b983;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background 0.3s;
-}
-
-.theme-btn:hover {
-  background: #369970;
-}
-
-.theme-status {
-  color: #666;
-  font-size: 0.9rem;
 }
 
 .language-select {

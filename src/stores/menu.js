@@ -3,7 +3,7 @@ import { ref, computed } from 'vue'
 
 export const useMenuStore = defineStore('menu', () => {
   // State: 展開的菜單 ID 列表
-  const expandedMenus = ref(new Set(['dashboard'])) // 預設展開儀表板
+  const expandedMenus = ref(new Set(['system'])) // 預設展開系統管理
   
   // Getters
   const isMenuExpanded = computed(() => {
@@ -28,7 +28,7 @@ export const useMenuStore = defineStore('menu', () => {
   }
   
   function expandAll() {
-    expandedMenus.value = new Set(['dashboard', 'system', 'about'])
+    expandedMenus.value = new Set(['system', 'about'])
   }
   
   function collapseAll() {

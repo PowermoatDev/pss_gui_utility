@@ -2,9 +2,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import About from '../views/About.vue'
 import Settings from '../views/Settings.vue'
-import DashboardStats from '../views/DashboardStats.vue'
 import SystemInfo from '../views/SystemInfo.vue'
-import AboutVersion from '../views/AboutVersion.vue'
 
 const routes = [
   {
@@ -13,14 +11,6 @@ const routes = [
     component: Home,
     meta: {
       title: '總覽'
-    }
-  },
-  {
-    path: '/dashboard/stats',
-    name: 'DashboardStats',
-    component: DashboardStats,
-    meta: {
-      title: '統計圖表'
     }
   },
   {
@@ -45,14 +35,6 @@ const routes = [
     component: About,
     meta: {
       title: '應用資訊'
-    }
-  },
-  {
-    path: '/about/version',
-    name: 'AboutVersion',
-    component: AboutVersion,
-    meta: {
-      title: '版本歷史'
     }
   }
 ]

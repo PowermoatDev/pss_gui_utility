@@ -8,8 +8,7 @@
     "dev:vite": "vite",
     "dev:electron": "cross-env NODE_ENV=development electron .",
     "build": "vite build",
-    "build:go": "cd backend && go build -o server main.go",
-    "start": "npm run build:go && npm run build && cross-env NODE_ENV=production electron .",
+    "start": "npm run build && cross-env NODE_ENV=production electron .",
     "pack": "electron-builder --dir",
     "dist": "electron-builder"
   },
@@ -38,12 +37,7 @@
     "files": [
       "dist/**/*",
       "electron/**/*",
-      "backend/server",
-      "backend/server.exe",
       "build/pss-gui-utility.desktop"
-    ],
-    "asarUnpack": [
-      "backend/**/*"
     ],
     "linux": {
       "target": ["AppImage", "deb"],

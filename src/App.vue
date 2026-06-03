@@ -2,26 +2,13 @@
   <div id="app">
     <header>
       <h1>🚀 PSS GUI Utility</h1>
-      <p>Vue 3 + Electron + Go 應用程式</p>
+      <p>Vue 3 + Electron 應用程式</p>
     </header>
     
     <div class="container">
       <div class="card">
-        <h2>後端連線狀態</h2>
-        <span :class="['status', statusClass]">{{ statusText }}</span>
-        <button @click="checkBackend" class="btn">檢查連線</button>
-      </div>
-      
-      <div class="card">
-        <h2>測試 API</h2>
-        <input 
-          v-model="name" 
-          type="text" 
-          placeholder="輸入您的名字"
-          @keyup.enter="sendMessage"
-        />
-        <button @click="sendMessage" class="btn">發送訊息到 Go 後端</button>
-        <div v-if="response" class="response">{{ response }}</div>
+        <h2>歡迎使用</h2>
+        <p>這是一個純前端桌面應用程式</p>
       </div>
 
       <div class="card">
@@ -30,8 +17,14 @@
           <li>⚡ Vue 3 - 前端框架</li>
           <li>📦 Vite - 構建工具</li>
           <li>🖥️ Electron - 桌面應用</li>
-          <li>🚀 Go 1.26 - 後端服務</li>
         </ul>
+      </div>
+      
+      <div class="card">
+        <h2>系統資訊</h2>
+        <p>平台: {{ platform }}</p>
+        <p>Node: {{ nodeVersion }}</p>
+        <p>Electron: {{ electronVersion }}</p>
       </div>
     </div>
   </div>
@@ -40,56 +33,16 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 
-const name = ref('');
-const response = ref('');
-const statusText = ref('未連線');
-const statusClass = ref('disconnected');
+const platform = ref('');
+const nodeVersion = ref('');
+const electronVersion = ref('');
 
-// 檢查後端連線狀態
-const checkBackend = async () => {
-  try {
-    const result = await window.api.healthCheck();
-    if (result.success) {
-      statusText.value = '已連線';
-      statusClass.value = 'connected';
-      console.log('Backend is healthy:', result.data);
-    } else {
-      statusText.value = '未連線';
-      statusClass.value = 'disconnected';
-      console.error('Backend connection failed:', result.error);
-    }
-  } catch (error) {
-    statusText.value = '未連線';
-    statusClass.value = 'disconnected';
-    console.error('Backend connection failed:', error);
-  }
-};
-
-// 發送訊息到 Go 後端
-const sendMessage = async () => {
-  if (!name.value) {
-    response.value = '請輸入名字';
-    return;
-  }
-  
-  try {
-    const result = await window.api.greet(name.value);
-    if (result.success) {
-      response.value = JSON.stringify(result.data, null, 2);
-    } else {
-      response.value = `錯誤: ${result.error}`;
-    }
-  } catch (error) {
-    response.value = `錯誤: ${error.message}`;
-  }
-};
-
-// 頁面載入時檢查後端
 onMounted(() => {
-  // 延遲檢查，等待 Go 後端啟動
-  setTimeout(() => {
-    checkBackend();
-  }, 2000);
+  if (window.api) {
+    platform.value = window.api.platform || 'Unknown';
+    nodeVersion.value = window.api.versions?.node || 'Unknown';
+    electronVersion.value = window.api.versions?.electron || 'Unknown';
+  }
 });
 </script>
 

@@ -2,6 +2,88 @@
   <div class="settings">
     <h1>⚙️ 系統設定</h1>
     
+    <Card title="資料庫連線設定" class="database-card">
+      <div class="setting-item">
+        <label>資料庫種類 <span class="required">*</span></label>
+        <select v-model="dbConfig.type" class="db-select">
+          <option value="mssql">MS SQL Server</option>
+          <option value="mysql">MySQL</option>
+        </select>
+      </div>
+      
+      <div class="setting-item">
+        <label>主機位址 (Host) <span class="required">*</span></label>
+        <input 
+          v-model="dbConfig.host" 
+          type="text"
+          placeholder="localhost"
+          class="db-input"
+        />
+      </div>
+      
+      <div class="setting-item">
+        <label>端口 (Port)</label>
+        <input 
+          v-model.number="dbConfig.port" 
+          type="number"
+          :placeholder="dbConfig.type === 'mssql' ? '1433' : '3306'"
+          class="db-input"
+        />
+      </div>
+      
+      <div class="setting-item">
+        <label>使用者名稱 <span class="required">*</span></label>
+        <input 
+          v-model="dbConfig.username" 
+          type="text"
+          placeholder="admin"
+          class="db-input"
+        />
+      </div>
+      
+      <div class="setting-item">
+        <label>密碼</label>
+        <div class="password-input">
+          <input 
+            v-model="dbConfig.password" 
+            :type="showPassword ? 'text' : 'password'"
+            placeholder="••••••••"
+            class="db-input"
+          />
+          <button 
+            @click="showPassword = !showPassword" 
+            class="toggle-password"
+            type="button"
+          >
+            {{ showPassword ? '👁️' : '👁️‍🗨️' }}
+          </button>
+        </div>
+      </div>
+      
+      <div class="setting-item">
+        <label>資料庫名稱</label>
+        <input 
+          v-model="dbConfig.database" 
+          type="text"
+          :placeholder="dbConfig.type === 'mssql' ? 'master' : ''"
+          class="db-input"
+        />
+      </div>
+      
+      <div class="db-actions">
+        <button @click="testConnection" class="test-btn" :disabled="configStore.loading">
+          {{ configStore.loading ? '測試中...' : '🔌 測試連線' }}
+        </button>
+        <button @click="saveConfiguration" class="save-btn primary" :disabled="configStore.loading">
+          {{ configStore.loading ? '儲存中...' : '💾 儲存設定' }}
+        </button>
+      </div>
+      
+      <div v-if="message" :class="['message', messageType]">
+        {{ message }}
+      </div>
+    </Card>
+    
     <Card title="語言設定">
       <div class="setting-item">
         <label>語言設定</label>
@@ -46,10 +128,81 @@
 </template>
 
 <script setup>
+import { ref, onMounted, toRaw } from 'vue'
 import { useAppStore } from '../stores/app'
+import { useConfigStore } from '../stores/config'
 import Card from '../components/Card.vue'
 
 const appStore = useAppStore()
+const configStore = useConfigStore()
+
+const showPassword = ref(false)
+const message = ref('')
+const messageType = ref('info')
+
+const dbConfig = ref({
+  type: 'mssql',
+  host: 'localhost',
+  port: null,
+  username: '',
+  password: '',
+  database: ''
+})
+
+// 載入設定
+onMounted(async () => {
+  await configStore.loadConfig()
+  if (configStore.config?.database) {
+    dbConfig.value = { ...configStore.config.database }
+  }
+})
+
+// 測試資料庫連線
+async function testConnection() {
+  if (!dbConfig.value.host || !dbConfig.value.username) {
+    showMessage('error', '❌ 請填寫必填欄位（主機位址、使用者名稱）')
+    return
+  }
+  
+  // 使用 toRaw 將 reactive 物件轉換為純物件
+  const result = await configStore.testConnection(toRaw(dbConfig.value))
+  
+  if (result.success) {
+    showMessage('success', result.message + (result.details ? '\n' + result.details : ''))
+  } else {
+    showMessage('error', result.message + (result.error ? '\n' + result.error : ''))
+  }
+}
+
+// 儲存設定
+async function saveConfiguration() {
+  if (!dbConfig.value.host || !dbConfig.value.username) {
+    showMessage('error', '❌ 請填寫必填欄位（主機位址、使用者名稱）')
+    return
+  }
+  
+  // 使用 toRaw 將 reactive 物件轉換為純物件，避免 IPC 序列化錯誤
+  const newConfig = {
+    ...toRaw(configStore.config),
+    database: toRaw(dbConfig.value)
+  }
+  
+  const result = await configStore.saveConfig(newConfig)
+  
+  if (result.success) {
+    showMessage('success', '✅ 設定已成功儲存')
+  } else {
+    showMessage('error', '❌ 儲存失敗：' + result.message)
+  }
+}
+
+function showMessage(type, msg) {
+  messageType.value = type
+  message.value = msg
+  setTimeout(() => {
+    message.value = ''
+  }, 5000)
+}
 
 function handleLanguageChange(event) {
   console.log('語言已變更為：', event.target.value)

@@ -1,5 +1,7 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
+const { loadConfig, saveConfig } = require('./utils/configManager');
+const { testDatabaseConnection } = require('./utils/dbConnector');
 
 let mainWindow;
 const isDev = process.env.NODE_ENV === 'development';
@@ -65,5 +67,37 @@ app.whenReady().then(() => {
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
+  }
+});
+
+// ==================== IPC 處理器 ====================
+
+// 讀取設定檔
+ipcMain.handle('config:load', async () => {
+  try {
+    const config = await loadConfig();
+    return { success: true, data: config };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+});
+
+// 保存設定檔
+ipcMain.handle('config:save', async (event, config) => {
+  try {
+    const result = await saveConfig(config);
+    return result;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+});
+
+// 測試資料庫連線
+ipcMain.handle('config:testConnection', async (event, dbConfig) => {
+  try {
+    const result = await testDatabaseConnection(dbConfig);
+    return result;
+  } catch (error) {
+    return { success: false, message: '連線測試失敗', error: error.message };
   }
 });

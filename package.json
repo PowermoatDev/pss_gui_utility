@@ -63,6 +63,8 @@
     }
   },
   "dependencies": {
+    "mssql": "^12.5.5",
+    "mysql2": "^3.22.4",
     "pinia": "^3.0.4",
     "vue-router": "^4.6.4"
   }

@@ -12,7 +12,12 @@
     "pack": "electron-builder --dir",
     "dist": "electron-builder"
   },
-  "keywords": ["electron", "vue3", "go", "desktop"],
+  "keywords": [
+    "electron",
+    "vue3",
+    "go",
+    "desktop"
+  ],
   "author": {
     "name": "Franco",
     "email": "franco@example.com"
@@ -40,14 +45,25 @@
       "build/pss-gui-utility.desktop"
     ],
     "linux": {
-      "target": ["AppImage", "deb"],
+      "target": [
+        "AppImage",
+        "deb"
+      ],
       "category": "Utility"
     },
     "win": {
-      "target": ["nsis"]
+      "target": [
+        "nsis"
+      ]
     },
     "mac": {
-      "target": ["dmg"]
+      "target": [
+        "dmg"
+      ]
     }
+  },
+  "dependencies": {
+    "pinia": "^3.0.4",
+    "vue-router": "^4.6.4"
   }
 }
